@@ -154,7 +154,7 @@ def get_race_events():
     """Fetch list of race events from parse.bot API."""
     print("Fetching race events...")
     try:
-        response = requests.get(EVENTS_API, timeout=30)
+        response = requests.post(EVENTS_API, json={}, timeout=30)
         response.raise_for_status()
         data = response.json()
         events = data.get("events", [])
@@ -168,9 +168,9 @@ def get_race_events():
 def get_race_results(event_id):
     """Fetch results for a specific race from parse.bot API."""
     try:
-        response = requests.get(
+        response = requests.post(
             RESULTS_API,
-            params={"event_id": event_id},
+            json={"event_id": event_id},
             timeout=30
         )
         response.raise_for_status()
@@ -192,8 +192,15 @@ def load_existing_races():
     if os.path.exists("races.json"):
         try:
             with open("races.json", "r") as f:
-                return json.load(f)
-        except:
+                data = json.load(f)
+                # Ensure it's a list of dictionaries
+                if isinstance(data, list) and all(isinstance(r, dict) for r in data):
+                    return data
+                else:
+                    print("Warning: races.json has invalid format, starting fresh")
+                    return []
+        except Exception as e:
+            print(f"Warning: Could not load races.json: {e}")
             pass
     return []
 
