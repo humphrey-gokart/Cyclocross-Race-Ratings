@@ -153,8 +153,10 @@ def matches_target_series(series_name):
 def get_race_events():
     """Fetch list of race events from parse.bot API."""
     print("Fetching race events...")
+    api_key = os.environ.get("PARSEBOT_API_KEY", "")
+    headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
     try:
-        response = requests.post(EVENTS_API, json={}, timeout=30)
+        response = requests.post(EVENTS_API, json={}, headers=headers, timeout=30)
         response.raise_for_status()
         data = response.json()
         events = data.get("events", [])
@@ -167,10 +169,13 @@ def get_race_events():
 
 def get_race_results(event_id):
     """Fetch results for a specific race from parse.bot API."""
+    api_key = os.environ.get("PARSEBOT_API_KEY", "")
+    headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
     try:
         response = requests.post(
             RESULTS_API,
             json={"event_id": event_id},
+            headers=headers,
             timeout=30
         )
         response.raise_for_status()
