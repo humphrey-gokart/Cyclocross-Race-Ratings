@@ -1,0 +1,33 @@
+name: Update CX Ratings
+
+on:
+  schedule:
+    # Run every day at 22:00 UTC (after most European races finish)
+    - cron: '0 22 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Run scraper
+        run: python scraper.py
+      
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add races.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update race ratings $(date +%Y-%m-%d)" && git push)
