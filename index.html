@@ -268,7 +268,7 @@
 
         <footer>
             <p>No spoilers. No results. Just ratings.</p>
-            <p><a href="https://github.com/YOUR_USERNAME/cx-ratings">Contribute on GitHub</a></p>
+            <p><a href="https://github.com/humphrey-gokart/Cyclocross-Race-Ratings">Contribute on GitHub</a></p>
         </footer>
     </div>
 
@@ -280,7 +280,7 @@
             try {
                 const response = await fetch('races.json');
                 const data = await response.json();
-                races = data.races;
+                races = Array.isArray(data) ? data : data.races || [];
                 populateFilters();
                 renderRaces();
             } catch (error) {
@@ -356,7 +356,7 @@
             container.innerHTML = filtered.map(race => `
                 <div class="race-card">
                     <div class="race-info">
-                        <span class="race-venue">${race.venue}</span>
+                        <span class="race-venue">${race.name}</span>
                         <span class="race-meta">${formatDate(race.date)} · ${race.category}</span>
                         <span class="race-series">${race.series}</span>
                     </div>
