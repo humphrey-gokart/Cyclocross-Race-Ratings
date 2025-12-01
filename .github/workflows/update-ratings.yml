@@ -2,9 +2,8 @@ name: Update CX Ratings
 
 on:
   schedule:
-    # Run every day at 22:00 UTC (after most European races finish)
     - cron: '0 22 * * *'
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
   scrape:
@@ -23,6 +22,8 @@ jobs:
         run: pip install -r requirements.txt
       
       - name: Run scraper
+        env:
+          PARSEBOT_API_KEY: ${{ secrets.PARSEBOT_API_KEY }}
         run: python scraper.py
       
       - name: Commit and push if changed
