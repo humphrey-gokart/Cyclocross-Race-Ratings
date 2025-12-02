@@ -10,8 +10,8 @@ import os
 from datetime import datetime
 
 # Parse.bot API endpoints
-EVENTS_API = "https://api.parse.bot/scraper/21b80e1f-f570-4391-b536-6e9d61536a9d/get_race_events"
-RESULTS_API = "https://api.parse.bot/scraper/21b80e1f-f570-4391-b536-6e9d61536a9d/get_race_results"
+EVENTS_API = "https://api.parse.bot/scraper/2583ae79-37d8-42c9-bf27-1dc26e005045/get_all_race_events"
+RESULTS_API = "https://api.parse.bot/scraper/2583ae79-37d8-42c9-bf27-1dc26e005045/get_race_results"
 
 # Series we care about
 TARGET_SERIES = [
