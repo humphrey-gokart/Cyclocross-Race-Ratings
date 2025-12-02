@@ -10,8 +10,8 @@ import os
 from datetime import datetime
 
 # Parse.bot API endpoints
-EVENTS_API = "https://api.parse.bot/scraper/a255becf-6539-415f-ae48-a14613ebe19a/get_race_event_list"
-RESULTS_API = "https://api.parse.bot/scraper/55aa208f-d53a-4bfc-bbb7-1c3681595d23/get_race_results"
+EVENTS_API = "https://api.parse.bot/scraper/21b80e1f-f570-4391-b536-6e9d61536a9d/get_race_events"
+RESULTS_API = "https://api.parse.bot/scraper/21b80e1f-f570-4391-b536-6e9d61536a9d/get_race_results"
 
 # Series we care about
 TARGET_SERIES = [
@@ -36,6 +36,10 @@ def parse_time_to_seconds(time_str):
     
     # Handle empty string as same time (0 seconds)
     if time_str == "":
+        return 0
+    
+    # Handle '' (two single quotes) as same time
+    if time_str == "''":
         return 0
     
     # Handle "s.t." (same time)
