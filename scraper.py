@@ -29,10 +29,14 @@ TARGET_SERIES = [
 
 def parse_time_to_seconds(time_str):
     """Convert time string to seconds. Returns None if invalid."""
-    if not time_str:
+    if time_str is None:
         return None
     
     time_str = str(time_str).strip()
+    
+    # Handle empty string as same time (0 seconds)
+    if time_str == "":
+        return 0
     
     # Handle "s.t." (same time)
     if time_str.lower() in ["s.t.", "st", "s.t"]:
@@ -136,6 +140,17 @@ def calculate_rating(results):
     if gap_to_2nd is not None and gap_to_3rd is not None:
         if gap_to_2nd <= 30 and gap_to_3rd >= 60:
             score += 15  # Two-rider duel bonus
+    
+    # Bunch finish bonus: count small gaps between consecutive positions in top 20
+    # If many riders are separated by <5 seconds, it was bunch racing
+    bunch_gaps = 0
+    for i in range(min(len(gaps) - 1, 19)):  # Top 20 means up to 19 gaps
+        gap_between = gaps[i+1] - gaps[i] if i+1 < len(gaps) else 999
+        if gap_between <= 5:
+            bunch_gaps += 1
+    
+    # Award points for bunch racing (up to 15 points)
+    score += min(bunch_gaps * 3, 15)
     
     # Convert to stars (stricter thresholds)
     if score >= 85:
