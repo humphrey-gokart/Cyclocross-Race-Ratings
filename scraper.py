@@ -153,13 +153,13 @@ def calculate_rating(results):
     score += min(bunch_gaps * 3, 15)
     
     # Convert to stars (stricter thresholds)
-    if score >= 85:
+    if score >= 95:
         stars = 5
-    elif score >= 65:
+    elif score >= 75:
         stars = 4
-    elif score >= 45:
+    elif score >= 50:
         stars = 3
-    elif score >= 25:
+    elif score >= 30:
         stars = 2
     else:
         stars = 1
