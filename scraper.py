@@ -62,7 +62,7 @@ def calculate_rating(results):
         return 0, 1
     
     # Sort by position
-    sorted_results = sorted(results, key=lambda x: x.get("position", 999))
+    sorted_results = sorted(results, key=lambda x: x.get("position") or 999)
     
     # Extract gaps - position 1 has finish time, others have gaps
     gaps = []
@@ -71,7 +71,7 @@ def calculate_rating(results):
         pos = result.get("position")
         time_str = result.get("Time") or result.get("time")
         
-        if not time_str:
+        if not time_str or not pos:
             continue
             
         seconds = parse_time_to_seconds(time_str)
@@ -89,25 +89,29 @@ def calculate_rating(results):
     gap_to_2nd = gaps[0] if len(gaps) > 0 else None
     gap_to_3rd = gaps[1] if len(gaps) > 1 else None
     
-    # Count riders within 10 seconds
-    close_finishers = sum(1 for g in gaps if g <= 10) + 1  # +1 for winner
+    # Count riders within 30 seconds (more generous than 10)
+    close_finishers = sum(1 for g in gaps if g <= 30) + 1  # +1 for winner
     
     # Calculate score
     score = 0
     
-    # Gap to 2nd (0-40 points) - most important
+    # Gap to 2nd (0-50 points) - most important
     if gap_to_2nd is not None:
         if gap_to_2nd == 0:
-            score += 40  # Same time / sprint finish
+            score += 50  # Same time / sprint finish
         elif gap_to_2nd <= 3:
-            score += 35
+            score += 45
         elif gap_to_2nd <= 10:
-            score += 25
+            score += 35
         elif gap_to_2nd <= 20:
-            score += 15
+            score += 25
         elif gap_to_2nd <= 30:
-            score += 10
+            score += 20
+        elif gap_to_2nd <= 45:
+            score += 15
         elif gap_to_2nd <= 60:
+            score += 10
+        elif gap_to_2nd <= 90:
             score += 5
     
     # Gap to 3rd (0-30 points)
@@ -115,23 +119,32 @@ def calculate_rating(results):
         if gap_to_3rd <= 5:
             score += 30
         elif gap_to_3rd <= 15:
-            score += 20
+            score += 25
         elif gap_to_3rd <= 30:
-            score += 10
+            score += 20
         elif gap_to_3rd <= 60:
+            score += 15
+        elif gap_to_3rd <= 120:
+            score += 10
+        elif gap_to_3rd <= 180:
             score += 5
     
-    # Close finishers bonus (0-30 points)
-    score += min(close_finishers * 6, 30)
+    # Close finishers bonus (0-20 points) - riders within 30 seconds
+    score += min(close_finishers * 5, 20)
     
-    # Convert to stars
-    if score >= 80:
+    # Duel bonus: if 1st and 2nd are close but 3rd is far back, it was a battle
+    if gap_to_2nd is not None and gap_to_3rd is not None:
+        if gap_to_2nd <= 30 and gap_to_3rd >= 60:
+            score += 15  # Two-rider duel bonus
+    
+    # Convert to stars (stricter thresholds)
+    if score >= 85:
         stars = 5
-    elif score >= 60:
+    elif score >= 65:
         stars = 4
-    elif score >= 40:
+    elif score >= 45:
         stars = 3
-    elif score >= 20:
+    elif score >= 25:
         stars = 2
     else:
         stars = 1
