@@ -152,14 +152,14 @@ def calculate_rating(results):
     # Award points for bunch racing (up to 15 points)
     score += min(bunch_gaps * 3, 15)
     
-    # Convert to stars (stricter thresholds)
-    if score >= 95:
+    # Convert to stars (Middelkerke = 107 as 5-star benchmark)
+    if score >= 107:
         stars = 5
-    elif score >= 75:
+    elif score >= 80:
         stars = 4
-    elif score >= 50:
+    elif score >= 55:
         stars = 3
-    elif score >= 30:
+    elif score >= 35:
         stars = 2
     else:
         stars = 1
